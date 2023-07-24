@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../Data/Cubit/cubit/all_news_cubit_cubit.dart';
+import '../Data/Reposetries/all_news_repo.dart';
 import '../Data/data.dart';
 import '../Shared/cardimage.dart';
 import 'detailed_screen.dart';
@@ -30,11 +33,6 @@ class openning_screen extends StatelessWidget {
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.white,
-                        /*contentPadding: const EdgeInsets.symmetric(
-                          vertical: 16.0,
-                          horizontal: 20.0,
-                        ),*/
-                        //    enabled: false,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16.0),
                           borderSide: BorderSide(
@@ -54,25 +52,6 @@ class openning_screen extends StatelessWidget {
                         ),
                       ),
                     ),
-
-                    /*TextFormField(
-                      decoration: InputDecoration(
-                          labelText: 'Dogecoin to the Moon...',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          /*labelStyle: GoogleFonts.nunito(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            //s  color: Color(0xFF818181),
-                          ),*/
-                          suffixIcon: IconButton(
-                            icon: Icon(Icons.search),
-                            color: Color(0xFF818181),
-                            iconSize: 20,
-                            onPressed: () {},
-                          )),
-                    ),*/
                   ),
                   Container(
                     width: screensize.width * (42 / 375),
@@ -91,6 +70,19 @@ class openning_screen extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                context.read<AllNewsCubitCubit>().getAllNews();
+              },
+              child: Text('Get News'),
+              style: ElevatedButton.styleFrom(
+                //     primary: Colors.green,
+                textStyle: GoogleFonts.nunito(
+                    color: Colors.white,
+                    fontSize: 17,
+                    fontStyle: FontStyle.normal),
               ),
             ),
             Padding(
@@ -139,12 +131,104 @@ class openning_screen extends StatelessWidget {
             Expanded(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: ListView(children: [
-                  for (int i = 0; i < im.length; i++)
-                    Card_image(
-                      index: i,
-                    ),
-                ]),
+                child: BlocBuilder<AllNewsCubitCubit, AllNewsCubitState>(
+                  builder: (context, state) {
+                    if (state is AllNewsCubitInitial)
+                      return Center(
+                        child: Text("press above button to get all news "),
+                      );
+                    else if (state is AllNewsCubitLoading)
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    else if (state is AllNewsCubiSuccess)
+                      return ListView(children: [
+                        for (int i = 0;
+                            i < state.ourresponse.articles!.length;
+                            i++)
+                          if ((state.ourresponse.articles![i].urlToImage) !=
+                                  null &&
+                              (state.ourresponse.articles![i].author) != null &&
+                              (state.ourresponse.articles![i].description) !=
+                                  null &&
+                              (state.ourresponse.articles![i].title) != null)
+                            InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => detailed_screen(
+                                        response: state.ourresponse, index: i),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                width: screensize.width,
+                                height: screensize.height * (240 / 812),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Stack(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        child: Image.network(
+                                          state.ourresponse.articles![i]
+                                              .urlToImage!,
+                                          fit: BoxFit.cover,
+                                          width: screensize.width,
+
+                                          //  width: double.infinity,
+                                          height: 300,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Spacer(),
+                                            Text(
+                                                state.ourresponse.articles![i]
+                                                    .author!,
+                                                style: GoogleFonts.nunito(
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Color(0xFFFFFFFF),
+                                                )),
+                                            Text(
+                                                state.ourresponse.articles![i]
+                                                    .title!,
+                                                style: GoogleFonts.nunito(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Color(0xFFFFFFFF),
+                                                )),
+                                            Spacer(),
+                                            Text(
+                                                state.ourresponse.articles![i]
+                                                    .description!,
+                                                style: GoogleFonts.nunito(
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Color(0xFFFFFFFF),
+                                                ))
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                      ]);
+                    else
+                      return Center(
+                        child: Text("Error"),
+                      );
+                  },
+                ),
               ),
             ),
           ],

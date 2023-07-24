@@ -38,6 +38,10 @@ dependencies:
   flutter_svg: ^0.22.0
   google_fonts: ^2.1.0
   blurrycontainer: 
+  bloc: ^8.1.2
+  http:
+  flutter_bloc:
+
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +75,7 @@ flutter:
    - lib/assets/Rectangle 60.png
    - lib/assets/Combined Shape.svg
    - lib/assets/Group 26.svg
+   - lib/assets/Group.svg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

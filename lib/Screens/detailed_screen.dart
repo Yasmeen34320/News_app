@@ -6,26 +6,35 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:blurrycontainer/blurrycontainer.dart';
+import 'package:news_app/Screens/openning_screen.dart';
+
+import '../Data/Models/ll_news_model/ll_news_model.dart';
 
 class detailed_screen extends StatelessWidget {
-  const detailed_screen({super.key});
+  // ignore: prefer_typing_uninitialized_variables
+  final LlNewsModel? response;
+  final int? index;
+  const detailed_screen({super.key, this.response, this.index});
 
   @override
   Widget build(BuildContext context) {
     var screensize = MediaQuery.of(context).size;
     return Scaffold(
+      floatingActionButton: FloatingActionButton.small(
+        onPressed: () {},
+        child: SvgPicture.asset("lib/assets/Group.svg"),
+      ),
       body: Container(
         width: screensize.width,
         height: screensize.height,
         child: Stack(children: [
           SizedBox(
-            width: screensize.width,
-            height: screensize.height * (0.6),
-            child: Image.asset(
-              "lib/assets/Rectangle 60.png",
-              //    fit: BoxFit.cover,
-            ),
-          ),
+              width: screensize.width,
+              height: screensize.height * (0.6),
+              child: Image.network(
+                response!.articles![index!].urlToImage!,
+                fit: BoxFit.cover,
+              )),
           Positioned(
             bottom: 0,
             child: Container(
@@ -52,7 +61,7 @@ class detailed_screen extends StatelessWidget {
                     text: TextSpan(
                       children: <TextSpan>[
                         TextSpan(
-                          text: 'LONDON',
+                          text: response!.articles![index!].title!,
                           style: GoogleFonts.nunito(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
@@ -60,8 +69,7 @@ class detailed_screen extends StatelessWidget {
                           ),
                         ),
                         TextSpan(
-                          text:
-                              " — Cryptocurrencies “have no intrinsic value” and people who invest in them should be prepared to lose all their money, Bank of England Governor Andrew Bailey said.\n\n Digital currencies like bitcoin, ether and even dogecoin have been on a tear this year, reminding some investors of the 2017 crypto bubble in which bitcoin blasted toward \$20,000, only to sink as low as \$3,122 a year later.\n\nAsked at a press conference Thursday about the rising value of cryptocurrencies, Bailey said: “They have no intrinsic value. That doesn\’t mean to say people don\’t put value on them, because they can have extrinsic value. But they have no intrinsic value.\n\nBailey’s comments echoed a similar warning from the U.K.’s Financial Conduct Authority ",
+                          text: response!.articles![index!].content!,
                           style: GoogleFonts.nunito(
                             fontSize: 14,
                             // fontWeight: FontWeight.bold,
@@ -82,6 +90,7 @@ class detailed_screen extends StatelessWidget {
             child: BlurryContainer(
               width: screensize.width * 0.7,
               blur: 50,
+              // sigmx : 40 , 40
               //   color: Color(0xFFF5F5F5),
               height: screensize.height * (171 / 812),
               child: Padding(
@@ -91,14 +100,13 @@ class detailed_screen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Spacer(),
-                      Text("Sunday, 9 May 2021",
+                      Text(response!.articles![index!].publishedAt!,
                           style: GoogleFonts.nunito(
                             fontSize: 12,
                             color: Color(0xFF2E0505),
                           )),
                       Spacer(),
-                      Text(
-                          "Crypto investors should be prepared to lose all their money, BOE governor says",
+                      Text(response!.articles![index!].title!,
                           style: GoogleFonts.nunito(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -106,7 +114,7 @@ class detailed_screen extends StatelessWidget {
                           )),
                       Spacer(),
                       Text(
-                        "Published by Ryan Browne",
+                        "Published by : ${response!.articles![index!].author!}",
                         style: GoogleFonts.nunito(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
@@ -120,10 +128,20 @@ class detailed_screen extends StatelessWidget {
           Positioned(
             top: 37,
             left: 25,
-            child: Container(
-              width: screensize.width * (52 / 375),
-              height: screensize.height * (52 / 812),
-              child: SvgPicture.asset("lib/assets/Group 26.svg"),
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => openning_screen(),
+                  ),
+                );
+              },
+              child: Container(
+                width: screensize.width * (52 / 375),
+                height: screensize.height * (52 / 812),
+                child: SvgPicture.asset("lib/assets/Group 26.svg"),
+              ),
             ),
           ),
         ]),
